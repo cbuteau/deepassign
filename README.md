@@ -2,4 +2,7 @@
 # deepassign
 
 Uses Object.assign() recursively.
-Make clonign easier with the more effiecient assign.
+Make cloning easier with the more efficient assign.
+
+We think we need a polyfill or helper function for IE.
++ [polyfill](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign#Polyfill)
