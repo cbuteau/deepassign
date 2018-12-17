@@ -1,0 +1,28 @@
+{
+  "name": "deepassign",
+  "version": "1.0.0",
+  "description": "Merge objects using Object.assign",
+  "main": "index.js",
+  "dependencies": {
+    "jest": "23.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "./node_modules/.bin/jest",
+    "debug": "node --inspect-brk ./node_modules/jest/bin/jest.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cbuteau/deepassign.git"
+  },
+  "keywords": [
+    "merge",
+    "assign"
+  ],
+  "author": "Christopher W Buteau <cbuteau@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cbuteau/deepassign/issues"
+  },
+  "homepage": "https://github.com/cbuteau/deepassign#readme"
+}
