@@ -1,3 +1,4 @@
+'use strict';
 
 function iterateProperties(obj, callback) {
   var keys = Object.keys(obj);
@@ -6,8 +7,33 @@ function iterateProperties(obj, callback) {
   });
 }
 
+function iterateArray(array, callback) {
+  for (var i = 0; i < array.length; i++) {
+    callback(array[i]);
+  }
+}
+
 function isObject(obj) {
   return (obj.isPrototypeOf && obj.hasOwnProperty && obj.toString);
+}
+
+function isArray(obj) {
+  return (obj.map && obj.indexOf && obj.push && obj.slice);
+}
+
+function isValueType(obj) {
+  if (obj === true || obj === false) {
+    return true; //boolean
+  }
+  if (obj.getDay && obj.getYear && obj.getMonth && obj.getHours && obj.getMinutes && obj.getSeconds) {
+    return true; //date
+  }
+  if (obj.toString && obj.valueOf && obj.toPrecision) {
+    return true; //number
+  }
+  if (obj.trim && obj.indexOf && obj.toLowerCase && obj.toUpperCase) {
+    return true; //string
+  }
 }
 
 function countDepth(object) {
@@ -23,6 +49,31 @@ function countDepth(object) {
   return count;
 }
 
+function countPropDepth(obj) {
+  var count = 0;
+  if (isValueType(obj)) {
+    return count;
+  }
+
+  iterateProperties(obj, function(prop) {
+    if (isValueType(prop)) {
+      // skip its just valuetype.
+    } else if (isArray(prop)) {
+      count++;
+      iterateArray(prop, function(item) {
+        var itemDepth = countPropDepth(item);
+        count += itemDepth;
+      });
+    } else if (isObject(prop)) {
+      count++;
+      var propObjDepth = countPropDepth(prop);
+      count += propObjDepth;
+      //count++;
+    }
+  });
+  return count;
+}
+
 function countObjects(obj) {
   var count = 0;
   iterateProperties(obj, function(prop) {
@@ -35,10 +86,10 @@ function countObjects(obj) {
 
 function deepAssign(obj, merge) {
 
-  var depthObj = countDepth(obj);
-  var depthMerg = countDepth(merge);
+  var depthObj = countPropDepth(obj);
+  var depthMerg = countPropDepth(merge);
 
-  if (depthObj === 1 && depthMerg === 1) {
+  if (depthObj === 0 && depthMerg === 0) {
     return Object.assign(obj, merge);
   }
 

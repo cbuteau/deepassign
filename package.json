@@ -4,7 +4,7 @@
   "description": "Merge objects using Object.assign",
   "main": "index.js",
   "dependencies": {
-    "jest": "23.6.0"
+    "jest": "24.8.0"
   },
   "devDependencies": {},
   "scripts": {
