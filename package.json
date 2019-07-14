@@ -6,7 +6,9 @@
   "dependencies": {
     "jest": "24.8.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "lodash": "4.17.14"
+  },
   "scripts": {
     "test": "./node_modules/.bin/jest",
     "debug": "node --inspect-brk ./node_modules/jest/bin/jest.js"
