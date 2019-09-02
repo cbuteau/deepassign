@@ -1,5 +1,5 @@
 
-var deepAssign = require('..');
+//var deepAssign = require('..');
 
 var defaultProps = {
   PI: Math.PI,
@@ -9,12 +9,12 @@ var defaultProps = {
 
 describe('Some Basic tests', function() {
 
-  test('Merge', function() {
+  it('Merge', function() {
     var result = deepAssign({}, defaultProps);
     expect(result).toEqual(defaultProps);
   });
 
-  test('With Defaults', function() {
+  it('With Defaults', function() {
     var defaultSetting = {
       showDialogs: true,
       loglevel: 4

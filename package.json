@@ -4,13 +4,20 @@
   "description": "Merge objects using Object.assign",
   "main": "index.js",
   "dependencies": {
-    "jest": "24.8.0"
+    "jest": "24.8.0",
+    "typecodes": "^1.0.0"
   },
   "devDependencies": {
+    "jasmine": "^3.4.0",
+    "karma": "^4.3.0",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-jasmine": "^2.0.1",
+    "karma-jasmine-html-reporter": "^1.4.2",
     "lodash": "4.17.14"
   },
   "scripts": {
-    "test": "./node_modules/.bin/jest",
+    "test": "karma start",
+    "test.ci": "karma start --single-run",
     "debug": "node --inspect-brk ./node_modules/jest/bin/jest.js"
   },
   "repository": {

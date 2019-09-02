@@ -3,7 +3,7 @@
 function iterateProperties(obj, callback) {
   var keys = Object.keys(obj);
   keys.forEach(function(key) {
-    callback(obj[key]);
+    callback(obj[key], key);
   });
 }
 
@@ -13,40 +13,9 @@ function iterateArray(array, callback) {
   }
 }
 
-function isObject(obj) {
-  return (obj.isPrototypeOf && obj.hasOwnProperty && obj.toString);
-}
-
-function isArray(obj) {
-  return (obj.map && obj.indexOf && obj.push && obj.slice);
-}
-
 function isValueType(obj) {
-  if (obj === true || obj === false) {
-    return true; //boolean
-  }
-  if (obj.getDay && obj.getYear && obj.getMonth && obj.getHours && obj.getMinutes && obj.getSeconds) {
-    return true; //date
-  }
-  if (obj.toString && obj.valueOf && obj.toPrecision) {
-    return true; //number
-  }
-  if (obj.trim && obj.indexOf && obj.toLowerCase && obj.toUpperCase) {
-    return true; //string
-  }
-}
-
-function countDepth(object) {
-  var count = 0;
-  var parent = object.__proto__;
-
-  while (parent !== null) {
-    count++;
-    parent = parent.__proto__;
-  }
-
-  // Base inline object {} seems to have one parent.
-  return count;
+  var code = tc.get(obj);
+  return code !== tc.CODES.OBJECT && code !== tc.CODES.ARRAY;
 }
 
 function countPropDepth(obj) {
@@ -56,51 +25,74 @@ function countPropDepth(obj) {
   }
 
   iterateProperties(obj, function(prop) {
-    if (isValueType(prop)) {
-      // skip its just valuetype.
-    } else if (isArray(prop)) {
-      count++;
-      iterateArray(prop, function(item) {
-        var itemDepth = countPropDepth(item);
-        count += itemDepth;
-      });
-    } else if (isObject(prop)) {
-      count++;
-      var propObjDepth = countPropDepth(prop);
-      count += propObjDepth;
-      //count++;
+    var code = tc.get(prop);
+    switch (code) {
+      case tc.CODES.OBJECT:
+        count++;
+        var propObjDepth = countPropDepth(prop);
+        count += propObjDepth;
+        break;
+      case tc.CODES.ARRAY:
+        count++;
+        iterateArray(prop, function(item) {
+          var itemDepth = countPropDepth(item);
+          count += itemDepth;
+        });
+        break;
+      default:
+        // skip its just valuetype.
+        break;
     }
   });
   return count;
 }
 
-function countObjects(obj) {
-  var count = 0;
-  iterateProperties(obj, function(prop) {
-    if (isObject(prop)) {
-      count++;
+function deepClone(obj) {
+  var final = {};
+
+  iterateProperties(obj, function(prop, propKey) {
+    var subcount = countPropDepth(prop);
+    if (subcount > 0) {
+      final[propKey] = deepClone(prop);
+    } else {
+      final[propKey] = prop;
     }
   });
-  return count;
+
+  return final;
 }
 
 function deepAssign(obj, merge) {
-
+  if (!tc.is(obj, tc.CODES.OBJECT) || !tc.is(merge, tc.CODES.OBJECT)) {
+    throw new Error('Only works when both paramteres are objects');
+  }
+  // clone initial object.
+  var final = deepClone(obj);
   var depthObj = countPropDepth(obj);
   var depthMerg = countPropDepth(merge);
 
   if (depthObj === 0 && depthMerg === 0) {
     return Object.assign(obj, merge);
   }
-
-  iterateProperties(merge, function(mprop) {
-    var subcount = countDepth(mprop);
+  iterateProperties(merge, function(mprop, propKey) {
+    var subcount = countPropDepth(mprop);
+    var currentProp = obj[propKey];
     if (subcount > 0) {
-      deepAssign(currentProp, currentMerge);
+      final[propKey] = deepAssign(currentProp, mprop);
     } else {
-      currentProp = Object.assign(currentProp, currentMerge);
+      // TODO make this point to polyfill for IE.
+      currentProp = Object.assign(currentProp, mprop);
+      final[propKey] = currentProp;
     }
   });
+
+
+  return final;
 }
 
-module.exports = deepAssign;
+var exposed = deepAssign;
+if (window && window.performance) {
+  window.deepAssign = exposed;
+} else {
+  module.exports = exposed;
+}

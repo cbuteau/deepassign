@@ -1,5 +1,5 @@
 
-var deepAssign = require('..');
+//var deepAssign = require('..');
 
 var defaultOptions = {
   inlineAMDS: [
@@ -44,7 +44,7 @@ var mergedOptions = {
 
 describe('Some Tests that use some object depth', function() {
 
-  test('Component', function() {
+  it('Component', function() {
     var result = deepAssign(defaultOptions, {
       layout: {
         tagManager: 'dynamic'
